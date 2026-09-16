@@ -34,6 +34,9 @@ namespace QuickLoot::Config
 		static bool ShowWhenUnlocked();
 		static bool ShowInThirdPersonView();
 		static bool ShowWhenMounted();
+		static bool ShowWhenWerewolf();
+		static bool ShowWhenVampireLord();
+		static bool RequireCtrlInBeastForm();
 		static bool EnableForContainers();
 		static bool EnableForCorpses();
 		static bool EnableForAnimals();

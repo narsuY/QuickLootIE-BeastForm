@@ -23,6 +23,9 @@ bool property QLIE_ShowWhenSneaking = true auto hidden
 bool property QLIE_ShowWhenUnlocked = true auto hidden
 bool property QLIE_ShowInThirdPerson = true auto hidden
 bool property QLIE_ShowWhenMounted = false auto hidden
+bool property QLIE_ShowWhenWerewolf = true auto hidden
+bool property QLIE_ShowWhenVampireLord = true auto hidden
+bool property QLIE_RequireCtrlInBeastForm = true auto hidden
 bool property QLIE_EnableForContainers = true auto hidden
 bool property QLIE_EnableForCorpses = true auto hidden
 bool property QLIE_EnableForAnimals = true auto hidden
@@ -307,7 +310,10 @@ function BuildGeneralPage()
 	AddTextOptionST("state_ShowWhenSneaking",		"$qlie_ShowWhenSneaking_text",		GetEnabledStatusText(QLIE_ShowWhenSneaking))
 	AddTextOptionST("state_ShowWhenUnlocked",		"$qlie_ShowWhenUnlocked_text",		GetEnabledStatusText(QLIE_ShowWhenUnlocked))
 	AddTextOptionST("state_ShowInThirdPerson",		"$qlie_ShowInThirdPerson_text",		GetEnabledStatusText(QLIE_ShowInThirdPerson))
-	AddTextOptionST("state_ShowWhenMounted",		"$qlie_ShowWhenMounted_text",		GetEnabledStatusText(QLIE_ShowWhenMounted))
+			AddTextOptionST("state_ShowWhenMounted", "$qlie_ShowWhenMounted_text", GetEnabledStatusText(QLIE_ShowWhenMounted))
+	AddTextOptionST("state_ShowWhenWerewolf",		"Show when in Werewolf form",		GetEnabledStatusText(QLIE_ShowWhenWerewolf))
+	AddTextOptionST("state_ShowWhenVampireLord",		"Show when in Vampire Lord form",		GetEnabledStatusText(QLIE_ShowWhenVampireLord))
+	AddTextOptionST("state_RequireCtrlInBeastForm",		"Require CTRL to loot (Beasts/Vampires)",		GetEnabledStatusText(QLIE_RequireCtrlInBeastForm))
 	AddTextOptionST("state_EnableForContainers",	"$qlie_EnableForContainers_text",	GetEnabledStatusText(QLIE_EnableForContainers))
 	AddTextOptionST("state_EnableForCorpses",		"$qlie_EnableForCorpses_text",		GetEnabledStatusText(QLIE_EnableForCorpses))
 	AddTextOptionST("state_EnableForAnimals",		"$qlie_EnableForAnimals_text",		GetEnabledStatusText(QLIE_EnableForAnimals))
@@ -497,8 +503,8 @@ string function GetEnabledStatusText(bool enabled, bool installed = true)
 	return "$qlie_Disabled"
 endfunction
 
-function ShowMsg(string message)
-	ShowMessage(message, false, "$qlie_ConfirmY", "$qlie_ConfirmN")
+function ShowMsg(string a_message)
+	ShowMessage(a_message, false, "$qlie_ConfirmY", "$qlie_ConfirmN")
 endfunction
 
 ;---------------------------------------------------
@@ -683,7 +689,57 @@ state state_ShowWhenMounted
 
 	event OnDefaultST()
 		QLIE_ShowWhenMounted = false
+	QLIE_ShowWhenWerewolf = true
+	QLIE_ShowWhenVampireLord = true
 		SetTextOptionValueST(GetEnabledStatusText(QLIE_ShowWhenMounted))
+	endevent
+endstate
+
+state state_ShowWhenWerewolf
+	event OnSelectST()
+		QLIE_ShowWhenWerewolf = !QLIE_ShowWhenWerewolf
+		SetTextOptionValueST(GetEnabledStatusText(QLIE_ShowWhenWerewolf))
+	endevent
+
+	event OnDefaultST()
+		QLIE_ShowWhenWerewolf = true
+		SetTextOptionValueST(GetEnabledStatusText(QLIE_ShowWhenWerewolf))
+	endevent
+
+	event OnHighlightST()
+		SetInfoText("Whether the loot menu opens while in Werewolf form. Default: Enabled")
+	endevent
+endstate
+
+state state_ShowWhenVampireLord
+	event OnSelectST()
+		QLIE_ShowWhenVampireLord = !QLIE_ShowWhenVampireLord
+		SetTextOptionValueST(GetEnabledStatusText(QLIE_ShowWhenVampireLord))
+	endevent
+
+	event OnDefaultST()
+		QLIE_ShowWhenVampireLord = true
+		SetTextOptionValueST(GetEnabledStatusText(QLIE_ShowWhenVampireLord))
+	endevent
+
+	event OnHighlightST()
+		SetInfoText("Whether the loot menu opens while in Vampire Lord form. Default: Enabled")
+	endevent
+endstate
+
+state state_RequireCtrlInBeastForm
+	event OnSelectST()
+		QLIE_RequireCtrlInBeastForm = !QLIE_RequireCtrlInBeastForm
+		SetTextOptionValueST(GetEnabledStatusText(QLIE_RequireCtrlInBeastForm))
+	endevent
+
+	event OnDefaultST()
+		QLIE_RequireCtrlInBeastForm = true
+		SetTextOptionValueST(GetEnabledStatusText(QLIE_RequireCtrlInBeastForm))
+	endevent
+
+	event OnHighlightST()
+		SetInfoText("If enabled, you must hold CTRL to see the loot menu in Beast Form, or as a Mortal Vampire looking at a corpse. This prevents QuickLoot from blocking your vanilla Feed options. Default: Enabled")
 	endevent
 endstate
 
@@ -770,6 +826,8 @@ function ResetSettings_General()
 	QLIE_ShowWhenUnlocked = true
 	QLIE_ShowInThirdPerson = true
 	QLIE_ShowWhenMounted = false
+	QLIE_ShowWhenWerewolf = true
+	QLIE_ShowWhenVampireLord = true
 	QLIE_EnableForContainers = true
 	QLIE_EnableForCorpses = true
 	QLIE_EnableForAnimals = true
@@ -785,6 +843,9 @@ function ExportSettings_General(string path)
 	JsonUtil.SetPathIntValue(path, "ShowWhenUnlocked", QLIE_ShowWhenUnlocked as int)
 	JsonUtil.SetPathIntValue(path, "ShowInThirdPerson", QLIE_ShowInThirdPerson as int)
 	JsonUtil.SetPathIntValue(path, "ShowWhenMounted", QLIE_ShowWhenMounted as int)
+	JsonUtil.SetPathIntValue(path, "ShowWhenWerewolf", QLIE_ShowWhenWerewolf as int)
+	JsonUtil.SetPathIntValue(path, "ShowWhenVampireLord", QLIE_ShowWhenVampireLord as int)
+	JsonUtil.SetPathIntValue(path, "RequireCtrlInBeastForm", QLIE_RequireCtrlInBeastForm as int)
 	JsonUtil.SetPathIntValue(path, "EnableForContainers", QLIE_EnableForContainers as int)
 	JsonUtil.SetPathIntValue(path, "EnableForCorpses", QLIE_EnableForCorpses as int)
 	JsonUtil.SetPathIntValue(path, "EnableForAnimals", QLIE_EnableForAnimals as int)
@@ -800,6 +861,9 @@ function ImportSettings_General(string path)
 	QLIE_ShowWhenUnlocked = JsonUtil.GetPathIntValue(path, "ShowWhenUnlocked", QLIE_ShowWhenUnlocked as int)
 	QLIE_ShowInThirdPerson = JsonUtil.GetPathIntValue(path, "ShowInThirdPerson", QLIE_ShowInThirdPerson as int)
 	QLIE_ShowWhenMounted = JsonUtil.GetPathIntValue(path, "ShowWhenMounted", QLIE_ShowWhenMounted as int)
+	QLIE_ShowWhenWerewolf = JsonUtil.GetPathIntValue(path, "ShowWhenWerewolf", QLIE_ShowWhenWerewolf as int)
+	QLIE_ShowWhenVampireLord = JsonUtil.GetPathIntValue(path, "ShowWhenVampireLord", QLIE_ShowWhenVampireLord as int)
+	QLIE_RequireCtrlInBeastForm = JsonUtil.GetPathIntValue(path, "RequireCtrlInBeastForm", QLIE_RequireCtrlInBeastForm as int)
 	QLIE_EnableForContainers = JsonUtil.GetPathIntValue(path, "EnableForContainers", QLIE_EnableForContainers as int)
 	QLIE_EnableForCorpses = JsonUtil.GetPathIntValue(path, "EnableForCorpses", QLIE_EnableForCorpses as int)
 	QLIE_EnableForAnimals = JsonUtil.GetPathIntValue(path, "EnableForAnimals", QLIE_EnableForAnimals as int)
@@ -1086,8 +1150,8 @@ state state_InfoColumnString
 		SetInputDialogStartText(StringJoin(QLIE_InfoColumns))
 	endevent
 
-	event OnInputAcceptST(string input)
-		SetInfoColumns(input, -1) ; Custom
+	event OnInputAcceptST(string a_input)
+		SetInfoColumns(a_input, -1) ; Custom
 	endevent
 
 	event OnDefaultST()

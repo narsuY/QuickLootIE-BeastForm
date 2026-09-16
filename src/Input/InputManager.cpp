@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "Input/InputManager.h"
+#include "MenuVisibilityManager.h"
 
 #include "ButtonArtIndex.h"
 #include "LootMenuManager.h"
@@ -180,6 +181,10 @@ namespace QuickLoot::Input
 	void InputManager::HandleButtonEvent(const RE::ButtonEvent* event)
 	{
 		const auto eventKey = NormalizeDeviceKey(event->GetDevice(), event->GetIDCode());
+    
+        if (eventKey.deviceType == DeviceType::kKeyboard && (eventKey.keyCode == 29 || eventKey.keyCode == 157)) {
+            QuickLoot::MenuVisibilityManager::OnSneakStateChanged();
+        }
 
 		if (_allModifierKeys.contains(eventKey)) {
 			UpdateModifierStates();

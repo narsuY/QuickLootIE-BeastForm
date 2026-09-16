@@ -167,7 +167,7 @@ namespace QuickLoot::Integrations
 		/// <returns>The pointer to the API singleton, or nullptr if request failed</returns>
 		[[nodiscard]] static inline void* RequestPluginAPI(const InterfaceVersion a_apiVersion = InterfaceVersion::kV3)
 		{
-			const auto pluginHandle = GetModuleHandle("NPCsNamesDistributor.dll");
+			const auto pluginHandle = GetModuleHandle(L"NPCsNamesDistributor.dll");
 			if (!pluginHandle)
 				return nullptr;
 

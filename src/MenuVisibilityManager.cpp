@@ -1,3 +1,4 @@
+#include <Windows.h>
 #include "MenuVisibilityManager.h"
 
 #include "Config/SystemSettings.h"
@@ -156,8 +157,22 @@ namespace QuickLoot
 		}
 
 		if (RE::MenuControls::GetSingleton()->InBeastForm()) {
-			logger::debug("LootMenu disabled because player is in beast form");
-			return false;
+			bool isVampireLord = player->HasKeywordString("Vampire");
+			if (isVampireLord && !Config::UserSettings::ShowWhenVampireLord()) {
+				logger::debug("LootMenu disabled because player is in Vampire Lord form");
+				return false;
+			} else if (!isVampireLord && !Config::UserSettings::ShowWhenWerewolf()) {
+				logger::debug("LootMenu disabled because player is in Werewolf form");
+				return false;
+			}
+            
+            if (Config::UserSettings::RequireCtrlInBeastForm()) {
+                bool isCtrlHeld = (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;
+                if (!isCtrlHeld) {
+                    logger::debug("LootMenu disabled because CTRL is not held in beast form");
+                    return false;
+                }
+            }
 		}
 
 		if (cameraState && !IsValidCameraState(cameraState->id)) {
@@ -194,6 +209,18 @@ namespace QuickLoot
 			if (!actor->IsDead()) {
 				logger::debug("LootMenu disabled because the actor isn't dead");
 				return false;
+			}
+
+			// Support for Mortal Vampire / Cannibal corpse feeding
+			if (Config::UserSettings::RequireCtrlInBeastForm()) {
+				bool isVampire = player->HasKeywordString("Vampire");
+				if (isVampire && !RE::MenuControls::GetSingleton()->InBeastForm()) {
+					bool isCtrlHeld = (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;
+					if (!isCtrlHeld) {
+						logger::debug("LootMenu disabled for Mortal Vampire on corpse (CTRL not held)");
+						return false;
+					}
+				}
 			}
 
 			if (actor->IsSummoned()) {

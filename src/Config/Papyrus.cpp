@@ -64,6 +64,9 @@ namespace QuickLoot::Config
 		LoadSettingsVar(QLIE_ShowWhenUnlocked, true);
 		LoadSettingsVar(QLIE_ShowInThirdPerson, true);
 		LoadSettingsVar(QLIE_ShowWhenMounted, false);
+		LoadSettingsVar(QLIE_ShowWhenWerewolf, true);
+		LoadSettingsVar(QLIE_ShowWhenVampireLord, true);
+			LoadSettingsVar(QLIE_RequireCtrlInBeastForm, true);
 		LoadSettingsVar(QLIE_EnableForContainers, true);
 		LoadSettingsVar(QLIE_EnableForCorpses, true);
 		LoadSettingsVar(QLIE_EnableForAnimals, true);
